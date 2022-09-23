@@ -26,10 +26,30 @@ scene.add(mesh)
 
 // Sizes
 const sizes = {
-    width: 800,
-    height: 600
+    width: window.innerWidth,
+    height: window.innerHeight
 }
 
+window.addEventListener('resize', () => {
+    sizes.width = window.innerWidth
+    sizes.height = window.innerHeight
+
+    // update camera
+    camera.aspect = sizes.width / sizes.height 
+    camera.updateProjectionMatrix()
+
+    // update renderer
+    renderer.setSize(sizes.width, sizes.height)
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+})
+
+window.addEventListener("dblclick", () => {
+    if(!document.fullscreenElement){
+        canvas.requestFullscreen()
+    } else {
+        document.exitFullscreen()
+    }
+})
 // Camera
 // const aspectRatio = sizes.width / sizes.height
 // const camera = new THREE.OrthographicCamera(- 1 * aspectRatio, 1 * aspectRatio, 1, - 1, 0.1, 100)
@@ -44,13 +64,13 @@ const canvas = document.querySelector('.webgl')
 // Controls
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
-console.log("test", controls)
 
 // Renderer
 const renderer = new THREE.WebGLRenderer({
     canvas: document.querySelector('canvas.webgl')
 })
 renderer.setSize(sizes.width, sizes.height) 
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
 // Clock
 const clock = new THREE.Clock()
