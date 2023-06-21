@@ -1,42 +1,25 @@
 import "./style.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import * as dat from "lil-gui";
 //import gsap from 'gsap';
 
-const loadingManager = new THREE.LoadingManager();
-loadingManager.onStart = () => {
-  console.log("loading started");
-};
-loadingManager.onLoad = () => {
-  console.log("loading finished");
-};
-loadingManager.onProgress = () => {
-  console.log("loading progressing");
-};
-loadingManager.onError = () => {
-  console.log("loading error");
-};
+/**
+ * Textures
+ */
+const textureLoader = new THREE.TextureLoader();
 
-const textureLoader = new THREE.TextureLoader(loadingManager);
-
-// ...
-
-const colorTexture = textureLoader.load("/textures/minecraft.png");
-colorTexture.wrapS = THREE.RepeatWrapping;
-colorTexture.wrapT = THREE.RepeatWrapping;
-
-colorTexture.minFilter = THREE.NearestFilter;
-colorTexture.magFilter = THREE.NearestFilter;
-
-
-const alphaTexture = textureLoader.load("/textures/door/alpha.jpg");
-const heightTexture = textureLoader.load("/textures/door/height.jpg");
-const normalTexture = textureLoader.load("/textures/door/normal.jpg");
-const ambientOcclusionTexture = textureLoader.load(
+const doorColorTexture = textureLoader.load("/textures/door/color.jpg");
+const doorAlphaTexture = textureLoader.load("/textures/door/alpha.jpg");
+const doorAmbientOcclusionTexture = textureLoader.load(
   "/textures/door/ambientOcclusion.jpg"
 );
-const metalnessTexture = textureLoader.load("/textures/door/metalness.jpg");
-const roughnessTexture = textureLoader.load("/textures/door/roughness.jpg");
+const doorHeightTexture = textureLoader.load("/textures/door/height.jpg");
+const doorNormalTexture = textureLoader.load("/textures/door/normal.jpg");
+const doorMetalnessTexture = textureLoader.load("/textures/door/metalness.jpg");
+const doorRoughnessTexture = textureLoader.load("/textures/door/roughness.jpg");
+const matcapTexture = textureLoader.load("/textures/matcaps/1.png");
+const gradientTexture = textureLoader.load("/textures/gradients/3.jpg");
 
 //cursor
 const cursor = {
@@ -53,13 +36,78 @@ window.addEventListener("mousemove", event => {
 const scene = new THREE.Scene();
 
 // Object
-const geometry = new THREE.BoxGeometry(1, 1, 1);
-// const material = new THREE.MeshBasicMaterial({ color: "red" });
-const material = new THREE.MeshBasicMaterial({ map: colorTexture });
-const mesh = new THREE.Mesh(geometry, material);
-console.log(geometry.attributes.uv);
-scene.add(mesh);
+// const material = new THREE.MeshMatcapMaterial()
+// material.matcap = matcapTexture
+// const material = new THREE.MeshPhongMaterial()
+// material.shininess = 100
+// material.specular = new THREE.Color(0x1188ff)
 
+// const material = new THREE.MeshToonMaterial()
+// material.gradientMap = gradientTexture
+// gradientTexture.minFilter = THREE.NearestFilter
+// gradientTexture.magFilter = THREE.NearestFilter
+// gradientTexture.generateMipmaps = false
+
+const material = new THREE.MeshStandardMaterial();
+material.metalness = 0.45;
+material.roughness = 0.65;
+material.map = doorColorTexture;
+material.aoMap = doorAmbientOcclusionTexture
+material.aoMapIntensity = 1
+
+
+const geometry = new THREE.BoxGeometry(1, 1, 1);
+const mesh = new THREE.Mesh(geometry, material);
+
+/**
+ * Objects
+ */
+
+const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.5, 16, 16), material);
+sphere.position.x = -1.5;
+sphere.geometry.setAttribute(
+  "uv2",
+  new THREE.BufferAttribute(sphere.geometry.attributes.uv.array, 2)
+);
+
+const plane = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), material);
+plane.geometry.setAttribute(
+  "uv2",
+  new THREE.BufferAttribute(plane.geometry.attributes.uv.array, 2)
+);
+
+const torus = new THREE.Mesh(
+  new THREE.TorusGeometry(0.3, 0.2, 16, 32),
+  material
+);
+torus.position.x = 1.5;
+torus.geometry.setAttribute(
+  "uv2",
+  new THREE.BufferAttribute(torus.geometry.attributes.uv.array, 2)
+);
+
+scene.add(sphere, plane, torus);
+
+/**
+ * Lights
+ */
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambientLight);
+
+// ...
+
+const pointLight = new THREE.PointLight(0xffffff, 0.5);
+pointLight.position.x = 2;
+pointLight.position.y = 3;
+pointLight.position.z = 4;
+scene.add(pointLight);
+
+/**
+ * Debug
+ */
+const gui = new dat.GUI();
+gui.add(material, "metalness").min(0).max(1).step(0.0001);
+gui.add(material, "roughness").min(0).max(1).step(0.0001);
 // Sizes
 const sizes = {
   width: window.innerWidth,
@@ -120,16 +168,15 @@ const clock = new THREE.Clock();
 const tick = () => {
   // Clock
   const elapsedTime = clock.getElapsedTime();
-  controls.update();
 
-  // // Update objects
-  // mesh.rotation.y = elapsedTime
+  // Update objects
+  sphere.rotation.y = 0.1 * elapsedTime;
+  plane.rotation.y = 0.1 * elapsedTime;
+  torus.rotation.y = 0.1 * elapsedTime;
 
-  //Update camera
-  //    camera.position.x = Math.sin(cursor.x * Math.PI * 2) * 3
-  //    camera.position.z = Math.cos(cursor.x * Math.PI * 2) * 3
-  //    camera.position.y = cursor.y * 5
-  //    camera.lookAt(mesh.position)
+  sphere.rotation.x = 0.15 * elapsedTime;
+  plane.rotation.x = 0.15 * elapsedTime;
+  torus.rotation.x = 0.15 * elapsedTime;
 
   // render object
   renderer.render(scene, camera);
