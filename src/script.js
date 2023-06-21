@@ -1,11 +1,42 @@
 import "./style.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import * as dat from "lil-gui";
-import gsap from "gsap";
+//import gsap from 'gsap';
 
-// DEBUG init
-const gui = new dat.GUI();
+const loadingManager = new THREE.LoadingManager();
+loadingManager.onStart = () => {
+  console.log("loading started");
+};
+loadingManager.onLoad = () => {
+  console.log("loading finished");
+};
+loadingManager.onProgress = () => {
+  console.log("loading progressing");
+};
+loadingManager.onError = () => {
+  console.log("loading error");
+};
+
+const textureLoader = new THREE.TextureLoader(loadingManager);
+
+// ...
+
+const colorTexture = textureLoader.load("/textures/minecraft.png");
+colorTexture.wrapS = THREE.RepeatWrapping;
+colorTexture.wrapT = THREE.RepeatWrapping;
+
+colorTexture.minFilter = THREE.NearestFilter;
+colorTexture.magFilter = THREE.NearestFilter;
+
+
+const alphaTexture = textureLoader.load("/textures/door/alpha.jpg");
+const heightTexture = textureLoader.load("/textures/door/height.jpg");
+const normalTexture = textureLoader.load("/textures/door/normal.jpg");
+const ambientOcclusionTexture = textureLoader.load(
+  "/textures/door/ambientOcclusion.jpg"
+);
+const metalnessTexture = textureLoader.load("/textures/door/metalness.jpg");
+const roughnessTexture = textureLoader.load("/textures/door/roughness.jpg");
 
 //cursor
 const cursor = {
@@ -22,43 +53,12 @@ window.addEventListener("mousemove", event => {
 const scene = new THREE.Scene();
 
 // Object
-// const geometry = new THREE.BoxGeometry(1, 1, 1, 4, 4, 4);
-// const geometry = new THREE.SphereGeometry(1, 32, 32)
-
-const count = 120;
-const positionsArray = new Float32Array(count * 3 * 3);
-
-for (let i = 0; i < count * 3 * 3; i++) {
-  positionsArray[i] = (Math.random() - 0.5) * 4;
-}
-
-const positionsAttribute = new THREE.BufferAttribute(positionsArray, 3);
-
-// Create an empty BufferGeometry
-const geometry = new THREE.BufferGeometry(count * 3 * 3);
-geometry.setAttribute("position", positionsAttribute);
-const material = new THREE.MeshBasicMaterial({
-  color: 0xff0000,
-  wireframe: true,
-});
+const geometry = new THREE.BoxGeometry(1, 1, 1);
+// const material = new THREE.MeshBasicMaterial({ color: "red" });
+const material = new THREE.MeshBasicMaterial({ map: colorTexture });
 const mesh = new THREE.Mesh(geometry, material);
-
+console.log(geometry.attributes.uv);
 scene.add(mesh);
-
-const parameters = {
-  color: 0xff0000,
-  spin: () =>
-    gsap.to(mesh.rotation, { duration: 1, y: mesh.rotation.y + Math.PI * 2 }),
-};
-// Debug
-gui.add(mesh.position, "x").min(-3).max(3).step(0.01);
-gui.add(mesh.position, "y").min(-3).max(3).step(0.01);
-gui.add(mesh.position, "z").min(-3).max(3).step(0.01);
-gui.add(material, "wireframe");
-gui.addColor(parameters, "color").onChange(() => {
-  material.color.set(parameters.color);
-});
-gui.add(parameters, "spin");
 
 // Sizes
 const sizes = {
