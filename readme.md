@@ -35,4 +35,5 @@ npm run dev
 # Build for production in the dist/ directory
 npm run build
 ```
-## License
+## License ©
+MIT License
