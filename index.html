@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <title>04 - Webpack</title>
+    <script type="module" crossorigin src="/threejs_journey/assets/index-42342ea9.js"></script>
+    <link rel="stylesheet" href="/threejs_journey/assets/index-a96de84e.css">
+  </head>
+  <body>
+      <button class="menu" id="btn">Add elements to scene</button>
+    <div class="menu hide" id="menu">
+      <div>
+        <label>Type your own text</label>
+        <input type="text" id="custom-text" />
+        <button type="submit" id="text-submit">Set</button>
+      </div>
+      <p for="name">Type of shape</p>
+      <form>
+        <div class="test">
+          <div class="shape">
+            <input
+              type="radio"
+              name="shape"
+              value="box"
+              id="shape-box"
+              checked
+            />
+            <label for="shape-size-random">Box</label>
+          </div>
+          <div class="shape">
+            <input
+              type="radio"
+              name="shape"
+              value="donut"
+              id="shape-sphere"
+              checked
+            />
+            <label for="shape-size-random">donut</label>
+          </div>
+        </div>
+        <button type="submit" id="shape-submit">Set</button>
+      </form>
+      <form>
+        <label for="name">Number of shapes</label>
+        <input type="number" name="number" id="number" />
+        <button type="submit" value="Ok" id="number-submit">OK</button>
+      </form>
+    </div>
+    <canvas class="webgl"></canvas>
+    
+    
+  </body>
+</html>
