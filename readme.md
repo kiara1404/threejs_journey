@@ -1,6 +1,14 @@
 # Three.js Journey
 
-## Setup
+## Demo
+
+## Description
+
+## Dependencies
+
+##
+
+## Installation
 Download [Node.js](https://nodejs.org/en/download/).
 Run this followed commands:
 
@@ -14,3 +22,4 @@ npm run dev
 # Build for production in the dist/ directory
 npm run build
 ```
+## License
