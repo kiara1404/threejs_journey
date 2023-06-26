@@ -27,9 +27,9 @@ const axesHelper = new THREE.AxesHelper();
  * Textures
  */
 const textureLoader = new THREE.TextureLoader();
-const glitterTexture = textureLoader.load("/textures/glitter/glitter.jpeg");
+const glitterTexture = textureLoader.load("./textures/glitter/glitter.jpeg");
 glitterTexture.minFilter = THREE.NearestFilter;
-const silverGlitter = textureLoader.load("/textures/glitter/silver.jpeg");
+const silverGlitter = textureLoader.load("./textures/glitter/silver.jpeg");
 silverGlitter.magFilter = THREE.NearestFilter;
 
 // Font
